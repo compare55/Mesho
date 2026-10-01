@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Meesho Clone</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <a href="/" class="logo-area">
+        <div class="logo-badge">meesho</div>
+        <div class="logo-text">Admin Panel</div>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">🛒 Shop & Resell</a>
+        <a href="reseller.html" class="nav-link">💼 My Reseller Dashboard</a>
+        <a href="supplier.html" class="nav-link">🏭 Supplier Portal</a>
+        <a href="admin.html" class="nav-link active">⚙️ Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <h2 style="margin-bottom: 20px;">⚙️ Admin Control Panel & Network Analytics</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 12px; font-weight: 700;">ACTIVE PRODUCTS</span>
+        <h2 id="admin-prod-count" style="margin-top: 5px;">0</h2>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 12px; font-weight: 700;">TOTAL ORDERS</span>
+        <h2 id="admin-order-count" style="margin-top: 5px;">0</h2>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 12px; font-weight: 700;">TOTAL GMV (SALES)</span>
+        <h2 id="admin-gmv" style="color: var(--meesho-pink); margin-top: 5px;">₹0</h2>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 12px; font-weight: 700;">COMMISSION DISTRIBUTED</span>
+        <h2 id="admin-payouts" style="color: var(--green-badge); margin-top: 5px;">₹0</h2>
+      </div>
+    </div>
+
+    <h3>📦 All Platform Transactions</h3>
+    <div style="overflow-x: auto; margin-top: 15px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Wholesale</th>
+            <th>Customer Sale</th>
+            <th>Reseller Margin</th>
+            <th>Payment Mode</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="admin-orders-table">
+          <tr><td colspan="8" style="text-align: center;">Loading system data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function loadAdminData() {
+      try {
+        const prodRes = await fetch('/api/products');
+        const prodData = await prodRes.json();
+        if (prodData.success) {
+          document.getElementById('admin-prod-count').innerText = prodData.count;
+        }
+
+        const orderRes = await fetch('/api/orders');
+        const orderData = await orderRes.json();
+        if (orderData.success) {
+          document.getElementById('admin-order-count').innerText = orderData.count;
+
+          let gmv = 0;
+          let marginTotal = 0;
+
+          orderData.orders.forEach(o => {
+            gmv += o.resellerSellingPrice;
+            marginTotal += o.resellerMargin;
+          });
+
+          document.getElementById('admin-gmv').innerText = '₹' + gmv;
+          document.getElementById('admin-payouts').innerText = '₹' + marginTotal;
+
+          const tbody = document.getElementById('admin-orders-table');
+          tbody.innerHTML = orderData.orders.map(o => `
+            <tr>
+              <td><strong>${o.orderId}</strong></td>
+              <td>${o.createdAt || 'Recent'}</td>
+              <td>${o.productTitle}</td>
+              <td>₹${o.wholesalePrice}</td>
+              <td>₹${o.resellerSellingPrice}</td>
+              <td><strong style="color: var(--green-badge);">₹${o.resellerMargin}</strong></td>
+              <td>${o.paymentMode}</td>
+              <td><span class="status-badge status-delivered">${o.status}</span></td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', loadAdminData);
+  </script>
+</body>
+</html>

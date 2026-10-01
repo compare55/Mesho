@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reseller Dashboard - Meesho Clone</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <a href="/" class="logo-area">
+        <div class="logo-badge">meesho</div>
+        <div class="logo-text">Reseller Portal</div>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">🛒 Shop & Resell</a>
+        <a href="reseller.html" class="nav-link active">💼 My Reseller Dashboard</a>
+        <a href="supplier.html" class="nav-link">🏭 Supplier Portal</a>
+        <a href="admin.html" class="nav-link">⚙️ Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <h2 style="margin-bottom: 20px;">💼 Reseller Margin & Earnings Tracker</h2>
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px;">
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">TOTAL PROFIT EARNED</span>
+        <h2 id="total-earned" style="color: var(--green-badge); margin-top: 8px;">₹0</h2>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">PENDING BANK PAYOUT</span>
+        <h2 id="pending-payout" style="color: var(--meesho-pink); margin-top: 8px;">₹0</h2>
+      </div>
+      <div style="background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border);">
+        <span style="color: var(--text-muted); font-size: 13px; font-weight: 600;">TOTAL RESOLD ORDERS</span>
+        <h2 id="total-orders" style="margin-top: 8px;">0</h2>
+      </div>
+    </div>
+
+    <!-- Orders History Table -->
+    <h3 style="margin-bottom: 15px;">📦 Customer Resell Orders</h3>
+    <div style="overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Product Name</th>
+            <th>Wholesale Rate</th>
+            <th>Customer Price</th>
+            <th>Your Margin</th>
+            <th>Customer Info</th>
+            <th>Payment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="reseller-orders-body">
+          <tr><td colspan="8" style="text-align: center;">Loading orders...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function loadResellerDashboard() {
+      try {
+        const statsRes = await fetch('/api/reseller/stats');
+        const statsData = await statsRes.json();
+        if (statsData.success) {
+          document.getElementById('total-earned').innerText = '₹' + statsData.stats.totalEarned;
+          document.getElementById('pending-payout').innerText = '₹' + statsData.stats.pendingPayout;
+          document.getElementById('total-orders').innerText = statsData.stats.totalOrders;
+        }
+
+        const ordersRes = await fetch('/api/orders');
+        const ordersData = await ordersRes.json();
+        if (ordersData.success) {
+          const tbody = document.getElementById('reseller-orders-body');
+          if (ordersData.orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No orders yet. Start sharing products to earn!</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = ordersData.orders.map(o => `
+            <tr>
+              <td><strong>${o.orderId}</strong></td>
+              <td>${o.productTitle}</td>
+              <td>₹${o.wholesalePrice}</td>
+              <td>₹${o.resellerSellingPrice}</td>
+              <td><strong style="color: var(--green-badge);">+₹${o.resellerMargin}</strong></td>
+              <td>${o.customerName}<br><small style="color: var(--text-muted);">${o.customerPhone}</small></td>
+              <td>${o.paymentMode}</td>
+              <td><span class="status-badge ${o.status === 'Delivered' ? 'status-delivered' : 'status-processing'}">${o.status}</span></td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', loadResellerDashboard);
+  </script>
+</body>
+</html>

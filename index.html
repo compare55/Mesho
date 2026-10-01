@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meesho Reselling - Online Shopping & Earnings Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header>
+    <div class="nav-container">
+      <a href="/" class="logo-area">
+        <div class="logo-badge">meesho</div>
+        <div class="logo-text">Reseller Web</div>
+      </a>
+
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search Saree, Kurti, Shirts, Electronics...">
+      </div>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link active">🛒 Shop & Resell</a>
+        <a href="reseller.html" class="nav-link">💼 My Reseller Dashboard</a>
+        <a href="supplier.html" class="nav-link">🏭 Supplier Portal</a>
+        <a href="admin.html" class="nav-link">⚙️ Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <div class="hero-text">
+        <span class="reseller-badge-pill">Zero Investment Reselling</span>
+        <h1>Share Products on WhatsApp & Add Your Profit Margin!</h1>
+        <p>Wholesale prices directly from manufacturers. Earn ₹25,000/month from home.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Bar -->
+  <div class="category-bar">
+    <div class="category-container">
+      <button class="cat-btn active" data-cat="All">All Categories</button>
+      <button class="cat-btn" data-cat="Sarees">Sarees</button>
+      <button class="cat-btn" data-cat="Kurtis">Kurtis</button>
+      <button class="cat-btn" data-cat="Men Wear">Men Wear</button>
+      <button class="cat-btn" data-cat="Electronics">Electronics</button>
+      <button class="cat-btn" data-cat="Jewellery">Jewellery</button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <div class="section-title">
+      <h2>🔥 Trending Wholesale Products</h2>
+    </div>
+
+    <div id="products-container" class="products-grid">
+      <!-- Dynamic Products Inserted via JS -->
+    </div>
+  </main>
+
+  <!-- Share on WhatsApp Modal -->
+  <div class="modal-overlay" id="share-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Share & Set Your Margin</h3>
+        <button class="close-modal" onclick="closeModal('share-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4 id="share-prod-title" style="margin-bottom: 10px; font-size: 15px;">Product Title</h4>
+        <div style="margin-bottom: 15px; color: var(--text-muted); font-size: 13px;">
+          Wholesale Price: <strong id="share-wholesale-price" style="color: var(--text-dark);">₹0</strong>
+        </div>
+
+        <div class="form-group">
+          <label for="reseller-custom-price">Your Selling Price to Customer (₹)</label>
+          <input type="number" id="reseller-custom-price" class="form-control" oninput="calculateMargin()">
+        </div>
+
+        <div class="margin-calculator-box">
+          <div>
+            <span style="font-size: 12px; color: var(--text-muted); display: block;">Your Total Profit Margin</span>
+            <small>Directly transferred to your bank account after delivery</small>
+          </div>
+          <span class="margin-val" id="calculated-margin">₹0</span>
+        </div>
+
+        <button class="btn btn-whatsapp" style="margin-top: 20px; width: 100%; padding: 12px;" onclick="generateWhatsAppShare()">
+          📲 Generate WhatsApp Catalog & Share
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Place Customer Order Modal -->
+  <div class="modal-overlay" id="order-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Place Order For Customer</h3>
+        <button class="close-modal" onclick="closeModal('order-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4 id="order-prod-title" style="margin-bottom: 12px; font-size: 15px;">Product Title</h4>
+        <form onsubmit="handlePlaceOrder(event)">
+          <div class="form-group">
+            <label>Final Price to Charge Customer (₹)</label>
+            <input type="number" id="order-selling-price" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Customer Full Name</label>
+            <input type="text" id="cust-name" class="form-control" placeholder="e.g. Ramesh Sharma" required>
+          </div>
+          <div class="form-group">
+            <label>Customer Phone Number</label>
+            <input type="tel" id="cust-phone" class="form-control" placeholder="10-digit mobile number" required>
+          </div>
+          <div class="form-group">
+            <label>Delivery Full Address & Pincode</label>
+            <textarea id="cust-address" class="form-control" rows="3" placeholder="House no, Area, City, Pincode" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="payment-mode" class="form-control">
+              <option>Cash on Delivery (COD)</option>
+              <option>Online Payment (UPI / Card)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
+            ✅ Confirm & Dispatch Order
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
